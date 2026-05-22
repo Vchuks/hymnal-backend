@@ -1,3 +1,4 @@
+const { setServers } = require("node:dns/promises");
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -5,7 +6,7 @@ const error = require("./middlewares/error")
 const authRoutes = require("./routes/auth")
 const hymnsRoutes = require("./routes/hymns")
 const categoryRoutes = require("./routes/category")
-
+setServers(["8.8.8.8", "1.1.1.1"])
 
 app.use(express.json());
 app.use("/auth", authRoutes)
