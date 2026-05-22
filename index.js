@@ -15,7 +15,7 @@ app.use("/category", categoryRoutes)
 app.use(error)
 
 mongoose
-    .connect(`${process.env.DB_URL}`)
+    .connect(process.env.DB_URL)
     .then(() => console.log("connecting..."))
     .catch((err) => console.log(`not connecting... ${err}`));
 
