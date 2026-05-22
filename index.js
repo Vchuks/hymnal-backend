@@ -1,5 +1,4 @@
 const express = require("express");
-// require("express-async-errors")
 const app = express();
 const mongoose = require("mongoose");
 const error = require("./middlewares/error")
@@ -14,8 +13,9 @@ app.use("/hymn", hymnsRoutes)
 app.use("/category", categoryRoutes)
 app.use(error)
 
+const DB = process.env.DB_URL
 mongoose
-    .connect("mongodb://localhost/library")
+    .connect(`${DB}`)
     .then(() => console.log("connecting..."))
     .catch((err) => console.log(`not connecting... ${err}`));
 
