@@ -14,9 +14,8 @@ app.use("/hymn", hymnsRoutes)
 app.use("/category", categoryRoutes)
 app.use(error)
 
-const DB = process.env.DB_URL
 mongoose
-    .connect(`${DB}`)
+    .connect(`${process.env.DB_URL}`)
     .then(() => console.log("connecting..."))
     .catch((err) => console.log(`not connecting... ${err}`));
 
