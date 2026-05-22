@@ -16,7 +16,7 @@ app.use(error)
 
 const DB = process.env.DB_URL
 mongoose
-    .connect(`${DB}`)
+    .connect(DB)
     .then(() => console.log("connecting..."))
     .catch((err) => console.log(`not connecting... ${err}`));
 
