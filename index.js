@@ -1,4 +1,3 @@
-const { setServers } = require("node:dns/promises");
 const express = require("express");
 const cors = require("cors")
 const app = express();
@@ -7,7 +6,7 @@ const error = require("./middlewares/error")
 const authRoutes = require("./routes/auth")
 const hymnsRoutes = require("./routes/hymns")
 const categoryRoutes = require("./routes/category")
-setServers(["8.8.8.8", "1.1.1.1"])
+
 
 app.use(cors())
 app.use(express.json());
@@ -21,6 +20,10 @@ mongoose
     .then(() => console.log("connecting..."))
     .catch((err) => console.log(`not connecting... ${err}`));
 
-const port = process.env.PORT || 4000
-app.listen(port, () => console.log(`listening to port ${port}`))
+// REQUIRED FOR VERCEL: Export the app instance
+module.exports = app;
 
+if (process.env.NODE_ENV !== "production") {
+    const port = process.env.PORT || 4000
+    app.listen(port, () => console.log(`listening to port ${port}`))
+}
