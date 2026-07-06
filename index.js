@@ -9,7 +9,7 @@ const hymnsRoutes = require("./routes/hymns")
 const categoryRoutes = require("./routes/category")
 setServers(["8.8.8.8", "1.1.1.1"])
 
-app.use(cors)
+app.use(cors())
 app.use(express.json());
 app.use("/auth", authRoutes)
 app.use("/hymn", hymnsRoutes)
