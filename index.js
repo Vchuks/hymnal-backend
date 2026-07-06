@@ -1,5 +1,6 @@
 const { setServers } = require("node:dns/promises");
 const express = require("express");
+const cors = require("cors")
 const app = express();
 const mongoose = require("mongoose");
 const error = require("./middlewares/error")
@@ -8,6 +9,7 @@ const hymnsRoutes = require("./routes/hymns")
 const categoryRoutes = require("./routes/category")
 setServers(["8.8.8.8", "1.1.1.1"])
 
+app.use(cors)
 app.use(express.json());
 app.use("/auth", authRoutes)
 app.use("/hymn", hymnsRoutes)
