@@ -48,7 +48,7 @@ function validateHymn(data) {
         title: Joi.string().min(3).max(30).required(),
         category: Joi.string(),
         author: Joi.string().min(3).max(50).allow(""),
-        sort_order: Joi.number().min(1)
+        sort_order: Joi.number().min(1).allow(null)
     })
 
     return schema.validate(data)
