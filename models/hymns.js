@@ -23,7 +23,7 @@ const hymnSchema = new mongoose.Schema({
 
 hymnSchema.pre('save', async function (next) {
     // Only auto-generate if it's a new document and the user didn't provide an order
-    if (this.isNew && this.sort_order === undefined) {
+    if (this.isNew && (this.sort_order === undefined || this.sort_order === null)) {
         try {
             // Find the hymn with the highest sort_order
             const lastHymn = await this.constructor.findOne()
