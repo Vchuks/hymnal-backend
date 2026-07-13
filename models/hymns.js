@@ -47,7 +47,7 @@ function validateHymn(data) {
     const schema = Joi.object({
         title: Joi.string().min(3).max(30).required(),
         category: Joi.string(),
-        author: Joi.string().min(3).max(50),
+        author: Joi.string().min(3).max(50).allow(""),
         sort_order: Joi.number().min(1)
     })
 
