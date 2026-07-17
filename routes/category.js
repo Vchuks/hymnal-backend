@@ -10,7 +10,7 @@ router.get("/", authM, async (req, res) => {
     return res.json(result)
 })
 
-router.post("", [authM, adminM], async (req, res) => {
+router.post("/", [authM, adminM], async (req, res) => {
     const { error } = validateCategory(req.body)
     if (error) return res.json(error.details[0].message)
 
