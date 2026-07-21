@@ -57,7 +57,8 @@ router.post("/", [authM, adminM], async (req, res) => {
 })
 
 router.put("/:id", [authM, adminM], async (req, res) => {
-    const getSongs = await Hymn.findByIdAndUpdate(req.params.id, _.pick(req.body, ["title", "category", "sort_order", "author"]), { new: true })
+    const updatedSong = _.pick(req.body, ["title", "category", "sort_order", "author"])
+    const getSongs = await Hymn.findByIdAndUpdate(req.params.id, updatedSong, { new: true })
     res.json({ data: _.pick(getSongs, ["title", "sort_order", "category","author"]), message: "Update Successful!" })
 })
 
