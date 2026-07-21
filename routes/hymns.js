@@ -58,7 +58,34 @@ router.post("/", [authM, adminM], async (req, res) => {
 })
 
 router.put("/:id", [authM, adminM], async (req, res) => {
-    const updatedSong = _.pick(req.body, ["title", "category", "sort_order", "author"])
+    const { title, category, sort_order, author } = req.body;
+        let categoryId = category;
+
+        // 1. Check if the client sent a raw string name instead of an ObjectId
+        if (category && !mongoose.Types.ObjectId.isValid(category)) {
+            // Find the category document matching the text name (case-insensitive)
+            const foundCategory = await Category.findOne({ 
+                name: { $regex: new RegExp(`^${category}$`, "i") } 
+            });
+
+            if (!foundCategory) {
+                return res.status(400).json({ 
+                    message: `Category '${category}' does not exist. Please create it first.` 
+                });
+            }
+            
+            // Swap the raw text string out for the real database ObjectId
+            categoryId = foundCategory._id;
+        }
+
+        // 2. Construct the update payload with the clean ID
+        const updatedSong = { 
+            title, 
+            category: categoryId, 
+            sort_order, 
+            author 
+        };
+    
     const getSongs = await Hymn.findByIdAndUpdate(req.params.id, updatedSong, { new: true })
     res.json({ data: _.pick(getSongs, ["title", "sort_order", "category","author"]), message: "Update Successful!" })
 })
