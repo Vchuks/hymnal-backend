@@ -58,13 +58,13 @@ router.post("/", [authM, adminM], async (req, res) => {
     res.status(201).json({ message: "Hymn created!" })
 })
 
-router.put("/:id", [authM, adminM], async (req, res) => {
-    const { title, category, sort_order, author } = req.body;
+router.put("/:id", [authM, adminM], async (req, res, next) => {
+    try {
+        const { title, category, sort_order, author } = req.body;
         let categoryId = category;
 
-        // 1. Check if the client sent a raw string name instead of an ObjectId
+        // 2. Translate a text string (like "offertory") into a MongoDB ObjectId
         if (category && !mongoose.Types.ObjectId.isValid(category)) {
-            // Find the category document matching the text name (case-insensitive)
             const foundCategory = await Category.findOne({ 
                 name: { $regex: new RegExp(`^${category}$`, "i") } 
             });
@@ -75,11 +75,9 @@ router.put("/:id", [authM, adminM], async (req, res) => {
                 });
             }
             
-            // Swap the raw text string out for the real database ObjectId
             categoryId = foundCategory._id;
         }
 
-        // 2. Construct the update payload with the clean ID
         const updatedSong = { 
             title, 
             category: categoryId, 
@@ -87,9 +85,29 @@ router.put("/:id", [authM, adminM], async (req, res) => {
             author 
         };
     
-    const getSongs = await Hymn.findByIdAndUpdate(req.params.id, updatedSong, { new: true })
-    res.json({ data: _.pick(getSongs, ["title", "sort_order", "category","author"]), message: "Update Successful!" })
-})
+        // 3. Update the database
+        const getSongs = await Hymn.findByIdAndUpdate(req.params.id, updatedSong, { new: true });
+
+        if (!getSongs) {
+            return res.status(404).json({ message: "Hymn not found" });
+        }
+
+        // 4. Return clean JSON without needing Lodash (_.pick)
+        res.json({ 
+            data: {
+                title: getSongs.title,
+                sort_order: getSongs.sort_order,
+                category: getSongs.category,
+                author: getSongs.author
+            }, 
+            message: "Update Successful!" 
+        });
+
+    } catch (err) {
+        // 5. Pass any unexpected database errors to your error middleware
+        next(err);
+    }
+});
 
 router.delete("/:id", [authM, adminM], async (req, res) => {
     const getSongs = await Hymn.findByIdAndDelete(req.params.id)
