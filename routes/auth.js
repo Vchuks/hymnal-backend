@@ -1,10 +1,11 @@
 const express = require("express")
 const router = express.Router()
 const bcrypt = require("bcrypt")
+const connectDB = require("../db")
 const { validate, User } = require("../models/auth");
 
 router.post("/login", async (req, res) => {
-   
+   await connectDB()
         //validate user's input
         const { error } = validate(req.body);
         if (error) return res.json(error.details[0].message);
@@ -34,7 +35,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  
+  await connectDB()
         const { error } = validate(req.body)
         if (error) return res.json(error.details[0].message);
         //check if user exists

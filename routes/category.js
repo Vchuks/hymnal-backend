@@ -1,16 +1,19 @@
 const express = require("express")
 const router = express.Router()
+const connectDB = require("../db")
 const _ = require("lodash")
 const authM = require("../middlewares/auth")
 const adminM = require("../middlewares/role")
 const { Category, validateCategory } = require("../models/category")
 
 router.get("/", authM, async (req, res) => {
+    await connectDB()
     const result = await Category.find().sort({ name: 1 }).select("-__v")
     return res.json(result)
 })
 
 router.post("/", [authM, adminM], async (req, res) => {
+    await connectDB()
     const { error } = validateCategory(req.body)
     if (error) return res.json(error.details[0].message)
 
@@ -28,11 +31,13 @@ router.post("/", [authM, adminM], async (req, res) => {
 })
 
 router.put("/:id", [authM, adminM], async (req, res) => {
+    await connectDB()
     const getCategory = await Category.findByIdAndUpdate(req.params.id,{name: req.body.name}, {new: true})
     res.json({data:_.pick(getCategory, ["name"]), message: "Update Successful!"})
 })
 
 router.delete("/:id", [authM, adminM], async (req, res) => {
+    await connectDB()
     const getCategory = await Category.findByIdAndDelete(req.params.id)
     if (!getCategory) {
         res.status(404).send("Category not found")

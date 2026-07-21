@@ -1,5 +1,6 @@
 const express = require("express")
 const mongoose = require("mongoose")
+const connectDB = require("../db")
 const { Hymn, validateHymn } = require("../models/hymns")
 const router = express.Router()
 const authM = require("../middlewares/auth")
@@ -24,6 +25,7 @@ router.get("/", authM, async (req, res) => {
     }
 
     try {
+        await connectDB()
         const getSongs = await Hymn.find(query)
             .populate('category', 'name -_id')
             .sort({ sort_order: 1, title: 1 })
@@ -41,6 +43,7 @@ router.get("/", authM, async (req, res) => {
 
 
 router.post("/", [authM, adminM], async (req, res) => {
+    await connectDB()
     const { error } = validateHymn(req.body)
     if (error) return res.json(error.details[0].message)
 
@@ -60,6 +63,7 @@ router.post("/", [authM, adminM], async (req, res) => {
 
 router.put("/:id", [authM, adminM], async (req, res, next) => {
     try {
+        await connectDB()
         const { title, category, sort_order, author } = req.body;
         let categoryId = category;
 
@@ -110,6 +114,7 @@ router.put("/:id", [authM, adminM], async (req, res, next) => {
 });
 
 router.delete("/:id", [authM, adminM], async (req, res) => {
+    await connectDB()
     const getSongs = await Hymn.findByIdAndDelete(req.params.id)
     if (!getSongs) {
         res.status(404).send("Hymn not found")
