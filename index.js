@@ -15,10 +15,26 @@ app.use("/hymn", hymnsRoutes)
 app.use("/category", categoryRoutes)
 app.use(error)
 
-mongoose
-    .connect(process.env.DB_URL)
-    .then(() => console.log("connecting..."))
-    .catch((err) => console.log(`not connecting... ${err}`));
+let isConnected = false;
+
+// Middleware to ensure DB connection before handling requests
+app.use(async (req, res, next) => {
+    if (isConnected) {
+        return next();
+    }
+    try {
+        const db = await mongoose.connect(process.env.DB_URL, {
+            maxPoolSize: 10, // Limits maximum open sockets per function
+            serverSelectionTimeoutMS: 5000 // Fails fast instead of hanging
+        });
+        isConnected = db.connections[0].readyState === 1;
+        console.log("Connected to MongoDB");
+        next();
+    } catch (err) {
+        console.error(`MongoDB connection error: ${err}`);
+        res.status(500).json({ error: "Database connection failed" });
+    }
+});
 
 // REQUIRED FOR VERCEL: Export the app instance
 module.exports = app;
