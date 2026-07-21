@@ -64,6 +64,9 @@ router.post("/", [authM, adminM], async (req, res) => {
 router.put("/:id", [authM, adminM], async (req, res, next) => {
     try {
         await connectDB()
+         const { error } = validateHymn(req.body)
+         if (error) return res.json(error.details[0].message)
+
         const { title, category, sort_order, author } = req.body;
         let categoryId = category;
 
