@@ -57,8 +57,8 @@ router.post("/", [authM, adminM], async (req, res) => {
 })
 
 router.put("/:id", [authM, adminM], async (req, res) => {
-    const getSongs = await Hymn.findByIdAndUpdate(req.params.id, _.pick(req.body, ["title", "category", "sort_order"]), { new: true })
-    res.json({ data: _.pick(getSongs, ["title", "sort_order", "category"]), message: "Update Successful!" })
+    const getSongs = await Hymn.findByIdAndUpdate(req.params.id, _.pick(req.body, ["title", "category", "sort_order", "author"]), { new: true })
+    res.json({ data: _.pick(getSongs, ["title", "sort_order", "category","author"]), message: "Update Successful!" })
 })
 
 router.delete("/:id", [authM, adminM], async (req, res) => {
